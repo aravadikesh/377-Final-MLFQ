@@ -285,6 +285,7 @@ void show_metrics(list<Process> processes) {
   cout << "Average Response Time:   " << avg_r << endl;
 }
 
+// Define four queues for each of the four priority levels
 typedef queue<Process> queue0;
 typedef queue<Process> queue1;
 typedef queue<Process> queue2;
