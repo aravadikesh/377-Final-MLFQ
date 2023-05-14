@@ -1,10 +1,10 @@
-_DEPS = bank.h ledger.h
-_OBJ = bank.o ledger.o
-_MOBJ = main.o
+_DEPS = scheduling.h
+_OBJ = scheduling.o
+_MOBJ = main_scheduling.o
 _TOBJ = test.o
 
-APPBIN = bank_app
-TESTBIN = bank_test
+APPBIN = scheduling_app
+TESTBIN = scheduling_test
 
 IDIR = include
 CC = g++
@@ -35,7 +35,6 @@ $(TESTBIN): $(TOBJ) $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(XXLIBS)
 
 submission:
-	find . -name "*~" -exec rm -rf {} \;
 	zip -r submission src lib include
 
 

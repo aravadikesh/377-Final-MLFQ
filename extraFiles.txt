@@ -1,4 +1,0 @@
-nih1.txt - series of deposits never fails - different account and same accounts
-nih2.txt - series of only withdrawals always fails - different and same accounts
-
-DON'T FORGET EMPTY LINES AT THE END OF THE FILES
