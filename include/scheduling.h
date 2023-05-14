@@ -10,6 +10,8 @@ struct Process {
   int first_run;  // filled during scheduling algo
   int duration;   // known from txt file
   int completion; // filled during scheduling algo
+  string type;     // CPU intensive or interactive
+
 };
 
 class ArrivalComparator {
@@ -45,6 +47,7 @@ list<Process> fifo(pqueue_arrival workload);
 list<Process> sjf(pqueue_arrival workload);
 list<Process> stcf(pqueue_arrival workload);
 list<Process> rr(pqueue_arrival workload);
+list<Process> mlfq(pqueue_arrival workload);
 
 float avg_turnaround(list<Process> processes);
 float avg_response(list<Process> processes);
