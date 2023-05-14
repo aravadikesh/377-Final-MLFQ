@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.py": "python",
-        "list": "cpp"
+        "list": "cpp",
+        "queue": "cpp"
     }
 }

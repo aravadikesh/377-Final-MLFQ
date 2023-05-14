@@ -402,10 +402,24 @@ list<Process> mlfq(pqueue_arrival workload){
         processes.push_back(p);
       }
       else {
-        // Boost the priority of CPU intensive processes
+        // Determine boost factor based on number of processes in fourth queue
+        int num_processes = q3.size();
+        double boost_factor = 1.0;
+        if (num_processes > 10) {
+          boost_factor = 1.5;
+        } else if (num_processes > 5) {
+          boost_factor = 1.2;
+        }
+
+        // Check if process is CPU intensive and should be boosted
         if (!p.interactive) {
           p.last_queue = 0;
           p.interactive = true;
+
+          // Adjust time slice based on boost factor
+          int time_slice = (int) (10 * boost_factor);
+          p.remaining += time_slice;
+
           q0.push(p);
         }
         else {
