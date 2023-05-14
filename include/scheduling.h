@@ -10,7 +10,9 @@ struct Process {
   int first_run;  // filled during scheduling algo
   int duration;   // known from txt file
   int completion; // filled during scheduling algo
-  string type;     // CPU intensive or interactive
+  int remaining;    // remaining duration for current time slice
+  int last_queue;   // last queue the process was in
+  bool interactive; // true if process is interactive, false if CPU intensive
 
 };
 
