@@ -306,22 +306,28 @@ list<Process> mlfq(pqueue_arrival workload){
     Process p = workload.top();
     p.remaining = p.duration;
     p.last_queue = 0;
+    p.waitingTime = 0; // Initialize waiting time to 0
     workload.pop();
     q0.push(p);
   }
 
   // Start the scheduling algorithm
   int time = 0;
+  int agingTimer = 0; // Timer to trigger aging mechanism
+  const int agingThreshold = 100; // Define a threshold for aging (arbitrary value)
+
   while (!q0.empty() || !q1.empty() || !q2.empty() || !q3.empty()) {
     // Check for interactive processes in the first queue
     // Allows for quick completion of short burst interactive processes
-    // Can also allow for boosted processes to receive CPU time 
+    // Can also allow for boosted processes to receive CPU time
     while (!q0.empty() && q0.front().interactive) {
       Process p = q0.front();
       q0.pop();
 
       // Execute the process for 1 time slice
       p.remaining--;
+      p.waitingTime++; // Increment waiting time for the process
+
       if (p.boosted) {
         p.boostTime++; // Track the amount of time a boosted process is boosted
       }
@@ -329,7 +335,7 @@ list<Process> mlfq(pqueue_arrival workload){
       if (p.remaining == 0) {
         p.completion = time + 1;
         processes.push_back(p);
-      } else if (p.boosted == true && p.boostTime >= 10) { // If a boosted process exceeds it's allotment, relegate it to a lower priority
+      } else if (p.boosted && p.boostTime >= 10) { // If a boosted process exceeds its allotment, relegate it to a lower priority
         p.boosted = false;
         p.interactive = false;
         q1.push(p);
@@ -343,17 +349,18 @@ list<Process> mlfq(pqueue_arrival workload){
       Process p = q0.front();
       q0.pop();
 
-      // Execute the process for the maximum time slice
-      p.remaining -= 10;
-      if (p.remaining <= 0) {
-        p.completion = time + 10 + p.remaining;
-        processes.push_back(p);
-      }
-      else {
-        p.last_queue = 1;
-        q1.push(p);
-      }
+    // Execute the process for the maximum time slice
+    p.remaining -= 10;
+    p.waitingTime++; // Increment waiting time for the process
+
+    if (p.remaining <= 0) {
+      p.completion = time + 10 + p.remaining;
+      processes.push_back(p);
+    } else {
+      p.last_queue = 1;
+      q1.push(p);
     }
+  }
 
     // Check for processes in the second queue
     if (!q1.empty()) {
@@ -362,15 +369,16 @@ list<Process> mlfq(pqueue_arrival workload){
 
       // Execute the process for the maximum time slice
       p.remaining -= 20;
+      p.waitingTime++; // Increment waiting time for the process
+
       if (p.remaining <= 0) {
         p.completion = time + 20 + p.remaining;
         processes.push_back(p);
-      }
+      } 
       else {
         if (p.last_queue == 1) {
           q2.push(p);
-        }
-        else {
+        } else {
           p.last_queue = 2;
           q2.push(p);
         }
@@ -384,15 +392,15 @@ list<Process> mlfq(pqueue_arrival workload){
 
       // Execute the process for the maximum time slice
       p.remaining -= 40;
+      p.waitingTime++; // Increment waiting time for the process
+
       if (p.remaining <= 0) {
         p.completion = time + 40 + p.remaining;
         processes.push_back(p);
-      }
-      else {
+      } else {
         if (p.last_queue == 2) {
           q3.push(p);
-        }
-        else {
+        } else {
           p.last_queue = 3;
           q3.push(p);
         }
@@ -406,11 +414,82 @@ list<Process> mlfq(pqueue_arrival workload){
 
       // Execute the process for the maximum time slice
       p.remaining -= 80;
+      p.waitingTime++; // Increment waiting time for the process
+
       if (p.remaining <= 0) {
         p.completion = time + 80 + p.remaining;
         processes.push_back(p);
+      } else {
+        // Determine boost factor based on number of processes in fourth queue
+        int num_processes = q3.size();
+        double boost_factor = 1.0;
+        if (num_processes > 10) {
+          boost_factor = 1.5;
+        } else if (num_processes > 5) {
+          boost_factor = 1.2;
+        }
+
+      // Check if process is CPU intensive and should be boosted
+      if (!p.interactive) {
+        p.last_queue = 0;
+        p.interactive = true;
+        p.boosted = true;
+        p.boostTime = 0;
+
+        // Adjust time slice based on boost factor
+        int time_slice = static_cast<int>(10 * boost_factor);
+        p.remaining += time_slice;
+
+        q0.push(p);
+      } else {
+        q3.push(p);
       }
-      else {
+    }
+    }
+
+    // Increment the time
+    time++;
+    agingTimer++;
+
+    // Check if it's time to perform aging
+    if (agingTimer >= agingThreshold) {
+      agingTimer = 0;
+
+      // Aging mechanism: Promote processes in lower-priority queues if they have been waiting for a long time
+      if (!q1.empty()) {
+        queue1 tempQ1; // Temporary queue to hold promoted processes
+
+        // Iterate over the processes in q1
+        while (!q1.empty()) {
+          Process p = q1.front();
+          q1.pop();
+
+          // Check waiting time threshold for promotion
+          if (p.waitingTime >= 100) {  // Arbitrary value for promoting to a higher queue
+            p.last_queue = 0;
+            p.waitingTime = 0;
+            q0.push(p); // Promote the process to the first queue
+          } else {
+            tempQ1.push(p); // Store the process back in the temporary queue
+          }
+        }
+
+        // Restore the remaining processes in tempQ1 back to q1
+        q1 = tempQ1;
+      }
+    }
+
+    // Check for processes in the fourth queue
+    if (!q3.empty()) {
+      Process p = q3.front();
+      q3.pop();
+
+      // Execute the process for the maximum time slice
+      p.remaining -= 80;
+      if (p.remaining <= 0) {
+        p.completion = time + 80 + p.remaining;
+        processes.push_back(p);
+      } else {
         // Determine boost factor based on number of processes in fourth queue
         int num_processes = q3.size();
         double boost_factor = 1.0;
