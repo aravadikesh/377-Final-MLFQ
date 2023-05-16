@@ -314,17 +314,26 @@ list<Process> mlfq(pqueue_arrival workload){
   int time = 0;
   while (!q0.empty() || !q1.empty() || !q2.empty() || !q3.empty()) {
     // Check for interactive processes in the first queue
+    // Allows for quick completion of short burst interactive processes
+    // Can also allow for boosted processes to receive CPU time 
     while (!q0.empty() && q0.front().interactive) {
       Process p = q0.front();
       q0.pop();
 
       // Execute the process for 1 time slice
       p.remaining--;
+      if (p.boosted) {
+        p.boostTime++; // Track the amount of time a boosted process is boosted
+      }
+
       if (p.remaining == 0) {
         p.completion = time + 1;
         processes.push_back(p);
-      }
-      else {
+      } else if (p.boosted == true && p.boostTime >= 10) { // If a boosted process exceeds it's allotment, relegate it to a lower priority
+        p.boosted = false;
+        p.interactive = false;
+        q1.push(p);
+      } else {
         q0.push(p);
       }
     }
@@ -368,7 +377,7 @@ list<Process> mlfq(pqueue_arrival workload){
       }
     }
 
-        // Check for processes in the third queue
+    // Check for processes in the third queue
     if (!q2.empty()) {
       Process p = q2.front();
       q2.pop();
@@ -415,14 +424,18 @@ list<Process> mlfq(pqueue_arrival workload){
         if (!p.interactive) {
           p.last_queue = 0;
           p.interactive = true;
+          p.boosted = true;
+          p.boostTime = 0;
 
           // Adjust time slice based on boost factor
+          // This gives a neglected/starved process direct priority to the CPU
+          // This can result in inefficiencies as increasing the remaining time can give a process
+          // excess access time, over what it actually needs.
           int time_slice = (int) (10 * boost_factor);
           p.remaining += time_slice;
 
           q0.push(p);
-        }
-        else {
+        }  else {
           q3.push(p);
         }
       }
