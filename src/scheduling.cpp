@@ -363,11 +363,11 @@ list<Process> mlfq(pqueue_arrival workload){
       q0.pop();
 
     // Execute the process for the maximum time slice
-    p.remaining -= 10;
+    p.remaining -= 5;
     p.waitingTime++; // Increment waiting time for the process
 
     if (p.remaining <= 0) {
-      p.completion = time + 10 + p.remaining;
+      p.completion = time + 5 + p.remaining;
       processes.push_back(p);
     } else {
       p.last_queue = 1;
@@ -381,11 +381,11 @@ list<Process> mlfq(pqueue_arrival workload){
       q1.pop();
 
       // Execute the process for the maximum time slice
-      p.remaining -= 20;
+      p.remaining -= 10;
       p.waitingTime++; // Increment waiting time for the process
 
       if (p.remaining <= 0) {
-        p.completion = time + 20 + p.remaining;
+        p.completion = time + 10 + p.remaining;
         processes.push_back(p);
       } 
       else {
@@ -404,11 +404,11 @@ list<Process> mlfq(pqueue_arrival workload){
       q2.pop();
 
       // Execute the process for the maximum time slice
-      p.remaining -= 40;
+      p.remaining -= 20;
       p.waitingTime++; // Increment waiting time for the process
 
       if (p.remaining <= 0) {
-        p.completion = time + 40 + p.remaining;
+        p.completion = time + 20 + p.remaining;
         processes.push_back(p);
       } else {
         if (p.last_queue == 2) {
@@ -420,45 +420,45 @@ list<Process> mlfq(pqueue_arrival workload){
       }
     }
 
-    // Check for processes in the fourth queue
-    if (!q3.empty()) {
-      Process p = q3.front();
-      q3.pop();
+    // // Check for processes in the fourth queue
+    // if (!q3.empty()) {
+    //   Process p = q3.front();
+    //   q3.pop();
 
-      // Execute the process for the maximum time slice
-      p.remaining -= 80;
-      p.waitingTime++; // Increment waiting time for the process
+    //   // Execute the process for the maximum time slice
+    //   p.remaining -= 30;
+    //   p.waitingTime++; // Increment waiting time for the process
 
-      if (p.remaining <= 0) {
-        p.completion = time + 80 + p.remaining;
-        processes.push_back(p);
-      } else {
-        // Determine boost factor based on number of processes in fourth queue
-        int num_processes = q3.size();
-        double boost_factor = 1.0;
-        if (num_processes > 10) {
-          boost_factor = 1.5;
-        } else if (num_processes > 5) {
-          boost_factor = 1.2;
-        }
+    //   if (p.remaining <= 0) {
+    //     p.completion = time + 30 + p.remaining;
+    //     processes.push_back(p);
+    //   } else {
+    //     // Determine boost factor based on number of processes in fourth queue
+    //     int num_processes = q3.size();
+    //     double boost_factor = 1.0;
+    //     if (num_processes > 10) {
+    //       boost_factor = 1.5;
+    //     } else if (num_processes > 5) {
+    //       boost_factor = 1.2;
+    //     }
 
-      // Check if process is CPU intensive and should be boosted
-      if (!p.interactive) {
-        p.last_queue = 0;
-        p.interactive = true;
-        p.boosted = true;
-        p.boostTime = 0;
+    //   // Check if process is CPU intensive and should be boosted
+    //   if (!p.interactive) {
+    //     p.last_queue = 0;
+    //     p.interactive = true;
+    //     p.boosted = true;
+    //     p.boostTime = 0;
 
-        // Adjust time slice based on boost factor
-        int time_slice = static_cast<int>(10 * boost_factor);
-        p.remaining += time_slice;
+    //     // Adjust time slice based on boost factor
+    //     int time_slice = static_cast<int>(10 * boost_factor);
+    //     p.remaining += time_slice;
 
-        q0.push(p);
-      } else {
-        q3.push(p);
-      }
-    }
-    }
+    //     q0.push(p);
+    //   } else {
+    //     q3.push(p);
+    //   }
+    // }
+    // }
 
     // Increment the time
     time++;
@@ -478,7 +478,7 @@ list<Process> mlfq(pqueue_arrival workload){
           q1.pop();
 
           // Check waiting time threshold for promotion
-          if (p.waitingTime >= 100) {  // Arbitrary value for promoting to a higher queue
+          if (p.waitingTime >= 15) {  // Arbitrary value for promoting to a higher queue
             p.last_queue = 0;
             p.waitingTime = 0;
             q0.push(p); // Promote the process to the first queue

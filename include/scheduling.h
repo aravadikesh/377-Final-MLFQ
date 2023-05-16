@@ -11,6 +11,8 @@ struct Process {
   int first_run;  // filled during scheduling algo
   int duration;   // known from txt file
   int completion; // filled during scheduling algo
+  
+  // following properties are only relevent for mlfq
   int remaining;    // remaining duration for current time slice
   int last_queue;   // last queue the process was in, initially 0
   bool interactive; // known in txt file, true if process is interactive, false if CPU intensive
