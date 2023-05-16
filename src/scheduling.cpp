@@ -509,8 +509,7 @@ list<Process> mlfq(pqueue_arrival workload){
 
           // Adjust time slice based on boost factor
           // This gives a neglected/starved process direct priority to the CPU
-          // This can result in inefficiencies as increasing the remaining time can give a process
-          // excess access time, over what it actually needs.
+          // This can result in inefficiencies as increasing the remaining time can give a process excess access time, over what it actually needs.
           int time_slice = (int) (10 * boost_factor);
           p.remaining += time_slice;
 
