@@ -327,7 +327,7 @@ list<Process> mlfq(pqueue_arrival workload){
   // Start the scheduling algorithm
   int time = 0;
   int agingTimer = 0; // Timer to trigger aging mechanism
-  const int agingThreshold = 100; // Define a threshold for aging (arbitrary value)
+  const int agingThreshold = 10; // Define a threshold for aging (arbitrary value)
 
   while (!q0.empty() || !q1.empty() || !q2.empty() || !q3.empty()) {
     // Check for interactive processes in the first queue
@@ -420,46 +420,6 @@ list<Process> mlfq(pqueue_arrival workload){
       }
     }
 
-    // // Check for processes in the fourth queue
-    // if (!q3.empty()) {
-    //   Process p = q3.front();
-    //   q3.pop();
-
-    //   // Execute the process for the maximum time slice
-    //   p.remaining -= 30;
-    //   p.waitingTime++; // Increment waiting time for the process
-
-    //   if (p.remaining <= 0) {
-    //     p.completion = time + 30 + p.remaining;
-    //     processes.push_back(p);
-    //   } else {
-    //     // Determine boost factor based on number of processes in fourth queue
-    //     int num_processes = q3.size();
-    //     double boost_factor = 1.0;
-    //     if (num_processes > 10) {
-    //       boost_factor = 1.5;
-    //     } else if (num_processes > 5) {
-    //       boost_factor = 1.2;
-    //     }
-
-    //   // Check if process is CPU intensive and should be boosted
-    //   if (!p.interactive) {
-    //     p.last_queue = 0;
-    //     p.interactive = true;
-    //     p.boosted = true;
-    //     p.boostTime = 0;
-
-    //     // Adjust time slice based on boost factor
-    //     int time_slice = static_cast<int>(10 * boost_factor);
-    //     p.remaining += time_slice;
-
-    //     q0.push(p);
-    //   } else {
-    //     q3.push(p);
-    //   }
-    // }
-    // }
-
     // Increment the time
     time++;
     agingTimer++;
@@ -498,17 +458,17 @@ list<Process> mlfq(pqueue_arrival workload){
       q3.pop();
 
       // Execute the process for the maximum time slice
-      p.remaining -= 80;
+      p.remaining -= 30;
       if (p.remaining <= 0) {
-        p.completion = time + 80 + p.remaining;
+        p.completion = time + 30 + p.remaining;
         processes.push_back(p);
       } else {
         // Determine boost factor based on number of processes in fourth queue
         int num_processes = q3.size();
         double boost_factor = 1.0;
-        if (num_processes > 10) {
+        if (num_processes > 5) {
           boost_factor = 1.5;
-        } else if (num_processes > 5) {
+        } else if (num_processes < 5) {
           boost_factor = 1.2;
         }
 
