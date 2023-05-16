@@ -11,7 +11,7 @@
 
 using namespace std;
 
-pqueue_arrival read_workload(string filename) {
+pqueue_arrival read_workload(const string& filename) {
   pqueue_arrival workload;
   ifstream infile(filename);
 
@@ -20,11 +20,12 @@ pqueue_arrival read_workload(string filename) {
   while (getline(infile, line)) {
     istringstream iss(line);
     int arrival, duration;
-    if (!(iss >> arrival >> duration)) {
+    bool interactive;
+    if (!(iss >> arrival >> duration >> interactive)) {
       break;
     } 
 
-    Process p = {arrival, -1, duration, 0};
+    Process p = {arrival, -1, duration, 0, duration, 0, interactive, false, 0, 0};
     workload.push(p);
   }
 

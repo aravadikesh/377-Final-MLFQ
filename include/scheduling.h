@@ -5,14 +5,15 @@
 using namespace std;
 
 typedef struct Process Process;
+
 struct Process {
   int arrival;    // known from txt file
   int first_run;  // filled during scheduling algo
   int duration;   // known from txt file
   int completion; // filled during scheduling algo
   int remaining;    // remaining duration for current time slice
-  int last_queue;   // last queue the process was in
-  bool interactive; // true if process is interactive, false if CPU intensive
+  int last_queue;   // last queue the process was in, initially 0
+  bool interactive; // known in txt file, true if process is interactive, false if CPU intensive
   bool boosted; // initially false, set to true if a process becomes boosted
   int boostTime; // tracks the time a process has been boosted for
   int waitingTime; // tracks time spent in a queue
