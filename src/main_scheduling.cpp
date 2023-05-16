@@ -6,7 +6,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
   if (argc != 3) {
-    cout << "usage: [fifo|sjf|stcf|rr] workload_file" << endl;
+    cout << "usage: [fifo|sjf|stcf|rr|mlfq] workload_file" << endl;
     exit(1);
   }
 
@@ -28,9 +28,11 @@ int main(int argc, char* argv[]) {
     show_metrics(stcf(workload));
   } else if (algorithm == "rr") {
     show_metrics(rr(workload));
+  } else if (algorithm == "mlfq") {
+    show_metrics(mlfq(workload));
   } else {
     cout << "Error: Unknown algorithm: " << algorithm << endl;
-    cout << "usage: [fifo|sjf|stcf|rr] workload_file" << endl;
+    cout << "usage: [fifo|sjf|stcf|rr|mlfq] workload_file" << endl;
     exit(1);
   }
 

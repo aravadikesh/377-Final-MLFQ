@@ -33,13 +33,12 @@ pqueue_arrival read_workload(const string& filename) {
   return workload;
 }
 
-void show_workload(pqueue_arrival workload) 
-{
+void show_workload(pqueue_arrival workload) {
   pqueue_arrival xs = workload;
   cout << "Workload:" << endl;
   while (!xs.empty()) {
     Process p = xs.top();
-    cout << '\t' << p.arrival << ' ' << p.duration << endl;
+    cout << '\t' << p.arrival << ' ' << p.duration << ' ' << p.interactive << ' ' << p.priority << endl;
     xs.pop();
   }
 }
@@ -252,7 +251,6 @@ list<Process> rr(pqueue_arrival workload) {
 }
 
 float avg_turnaround(list<Process> processes) {
-
 
   float turnaroundSum = 0;
   float count = 0;
