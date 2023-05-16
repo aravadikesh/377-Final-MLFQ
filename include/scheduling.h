@@ -17,6 +17,7 @@ struct Process {
   bool boosted; // initially false, set to true if a process becomes boosted
   int boostTime; // tracks the time a process has been boosted for
   int waitingTime; // tracks time spent in a queue
+  int priority; // importance of a process read in from txt
 };
 
 class ArrivalComparator {

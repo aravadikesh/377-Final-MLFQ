@@ -19,13 +19,13 @@ pqueue_arrival read_workload(const string& filename) {
 
   while (getline(infile, line)) {
     istringstream iss(line);
-    int arrival, duration;
+    int arrival, duration, priority;
     bool interactive;
-    if (!(iss >> arrival >> duration >> interactive)) {
+    if (!(iss >> arrival >> duration >> interactive >> priority)) {
       break;
     } 
 
-    Process p = {arrival, -1, duration, 0, duration, 0, interactive, false, 0, 0};
+    Process p = {arrival, -1, duration, 0, duration, 0, interactive, false, 0, 0, priority};
     workload.push(p);
   }
 
@@ -302,14 +302,26 @@ list<Process> mlfq(pqueue_arrival workload){
   // Initialize the processes list
   list<Process> processes;
 
-  // Move the processes from the priority queue to the first queue
+  // Move the processes from the priority queue to their respective queues
   while (!workload.empty()) {
     Process p = workload.top();
     p.remaining = p.duration;
-    p.last_queue = 0;
-    p.waitingTime = 0; // Initialize waiting time to 0
     workload.pop();
-    q0.push(p);
+
+    // Determine the priority of the process and place it in the corresponding queue
+    if (p.priority == 0) {
+      p.last_queue = 0;
+      q0.push(p);
+    } else if (p.priority == 1) {
+      p.last_queue = 1;
+      q1.push(p);
+    } else if (p.priority == 2) {
+      p.last_queue = 2;
+      q2.push(p);
+    } else if (p.priority == 3) {
+      p.last_queue = 3;
+      q3.push(p);
+    }
   }
 
   // Start the scheduling algorithm
