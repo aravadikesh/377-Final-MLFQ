@@ -6,17 +6,17 @@ This code implements the MLFQ scheduling algorithm, which schedules processes ba
 
 The `Process` structure represents a process and contains the following properties:
 
-- `arrival`: The arrival time of the process (known from a text file).
+- `arrival`: The arrival time of the process (known from the text file).
 - `first_run`: The time when the process is first scheduled to run (filled during the scheduling algorithm).
-- `duration`: The total duration of the process (known from a text file).
+- `duration`: The total duration of the process (known from the text file).
 - `completion`: The time when the process completes its execution (filled during the scheduling algorithm).
 - `remaining`: The remaining duration of the process for the current time slice (relevant for MLFQ).
 - `last_queue`: The last queue the process was in (initially 0).
-- `interactive`: A boolean value indicating if the process is interactive (`true`) or CPU intensive (`false`) (known from a text file).
+- `interactive`: A boolean value indicating if the process is interactive (`true`) or CPU intensive (`false`) (known from the text file).
 - `boosted`: A boolean value indicating if the process has been boosted (initially `false`).
 - `boostTime`: The time duration for which the process has been boosted.
 - `waitingTime`: The time spent by the process in a queue.
-- `priority`: The importance of the process (read from a text file).
+- `priority`: The importance of the process (known from the text file).
 
 ## Function Signatures
 
