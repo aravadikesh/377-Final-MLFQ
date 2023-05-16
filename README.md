@@ -76,7 +76,7 @@ The `mlfq` function follows the following steps to schedule processes using the 
 
 ## Helper Functions
 
-The MLFQ function also includes the following helper functions:
+The Codebase also includes the following helper functions:
 
 - `pqueue_arrival read_workload(string filename)`: Reads the workload from a text file and returns a priority queue of processes sorted based on their arrival time.
 - `void show_workload(pqueue_arrival workload)`: Displays the contents of the workload (priority queue) on the console.
