@@ -4,7 +4,39 @@ The Multi-Level Feedback Queue (MLFQ) is a CPU scheduling algorithm that manages
 
 The MLFQ algorithm can be implemented using multiple queues, where each queue has a different priority level and a different time quantum (time slice). The basic idea is to give higher priority queues smaller time slices to provide responsiveness, while lower priority queues have larger time slices to allow long-running jobs to progress.
 
-There are variations of the MLFQ algorithm with different features such as priority boosting and aging. Here, I have implemented two functions: `mlfqBasic` and `mlfq`, which implement the basic MLFQ algorithm and an enhanced version with priority boosting and aging, respectively.
+There are variations of the MLFQ algorithm with different features such as priority boosting and aging. Here, I have implemented two functions: `mlfqBasic` and `mlfq`, which implement the basic MLFQ algorithm and an enhanced version with priority boosting and aging, respectively. Furthermore, implementations for additional simpler scheduling algorithms have been included for comparison purposes. Respectively, these are : `fifo`, `sjf`, `stcf`, and `rr`.
+
+## Code Structure
+
+This project contains the following important files/folders:
+
+- `include`: This is where the C/C++ header files are kept. 
+- `obj`: This folder is used for object files that are generated from the C compilation process.
+- `src`: This is the source folder where all the source code lies. 
+- `Makefile`: This is a "build" file. This file is used to compile the code.
+- `workloads`: This folder contains several text files that serve as the base upon which the scheduling algorithms are run.
+
+## Compiling and Running the code
+
+To compile the code (if necessary), the following command must be run:
+
+```cpp
+$ make
+```
+
+This project was built and compiled in the edLabs environment and will run ideally in the same environment.
+
+To run the code, you must run the `scheduling_app` executable from the command line.
+
+The syntax to do so is specified in the `main_scheduling` file.
+
+### Running the Code 
+   Enter the following syntax into the command line.
+    - `./scheduling.app "required scheduling algorithm" "workloads/required workload file"`
+   Example : to run the basic MLFQ function on workload3 :
+   -`./scheduling_app mlfqBasic workloads/workload3.txt`
+   Example : to run the enhanced MLFQ function on workload1 :
+   -`./scheduling_app mlfq workloads/workload1.txt`
 
 ## Process Structure
 
