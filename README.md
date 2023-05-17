@@ -22,7 +22,7 @@ The `Process` structure represents a process and contains the following properti
 - `priority`: The importance of the process (known from the text file).
 
 
-### `mlfqBasic` Function
+### The `mlfqBasic` Function
 
 The `mlfqBasic` function implements the basic MLFQ algorithm without priority boosting or aging. It takes a workload of processes as input and returns a list of processes after scheduling them.
 
@@ -54,7 +54,7 @@ The `mlfqBasic` function follows the following algorithm:
 6. Exit the loop.
 7. Return the sorted `processes` list as the final scheduling result.
 
-### `mlfq` Function
+### The `mlfq` Function
 
 The mlfq function is an enhanced version of the MLFQ algorithm. It takes a priority queue of processes as input and returns a list of processes after scheduling them. The function includes additional features such as priority boosting and aging.
 
