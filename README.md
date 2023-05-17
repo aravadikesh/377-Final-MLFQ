@@ -31,11 +31,11 @@ To run the code, you must run the `scheduling_app` executable from the command l
 The syntax to do so is specified in the `main_scheduling` file.
 
 ### Running the Code 
-   Enter the following syntax into the command line.
+   -Enter the following syntax into the command line.
     - `./scheduling.app "required scheduling algorithm" "workloads/required workload file"`
-   Example : to run the basic MLFQ function on workload3 :
+   -Example : to run the basic MLFQ function on workload3 :
    -`./scheduling_app mlfqBasic workloads/workload3.txt`
-   Example : to run the enhanced MLFQ function on workload1 :
+   -Example : to run the enhanced MLFQ function on workload1 :
    -`./scheduling_app mlfq workloads/workload1.txt`
 
 ## Process Structure
