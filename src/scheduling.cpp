@@ -286,12 +286,12 @@ void show_metrics(list<Process> processes) {
 
 
 // Define four queues for each of the four priority levels
-typedef queue<Process> queue0;
-typedef queue<Process> queue1;
-typedef queue<Process> queue2;
-typedef queue<Process> queue3;
+typedef queue<Process> queueP;
+// typedef queue<Process> queue1;
+// typedef queue<Process> queue2;
+// typedef queue<Process> queue3;
 
-void processHandler(int currentTime, queue0* q0, queue1* q1, queue2* q2, queue3* q3, pqueue_arrival* workload) {
+void processHandler(int currentTime, queueP* q0, queueP* q1, queueP* q2, queueP* q3, pqueue_arrival* workload) {
   while (!workload->empty()) {
     Process p = workload->top();
     if(p.arrival > currentTime) {
@@ -316,14 +316,45 @@ void processHandler(int currentTime, queue0* q0, queue1* q1, queue2* q2, queue3*
   }
 }
 
+void processRunner(queueP* initialQ, queueP* finalQ, int* time, list<Process>* processes, int runSlice) {
+  Process p = initialQ->front();
+  initialQ->pop();
+
+  // Execute the process for 1 time slice
+  if(p.first_run == -1){
+    p.first_run = *time;
+  }
+
+  p.remaining -= runSlice;
+  time += runSlice;
+  p.waitingTime +=  runSlice; // Increment waiting time for the process
+
+  if (p.boosted) {
+    p.boostTime += runSlice; // Track the amount of time a boosted process is boosted
+  }
+
+  if (p.remaining == 0) {
+    p.completion = *time + runSlice + p.remaining;
+    processes->push_back(p);
+  } else if (p.boosted && p.boostTime >= slice*2) { 
+    p.boosted = false;
+    p.interactive = false;
+    finalQ->push(p);
+  } else {
+    initialQ->push(p);
+  }
+}
+
+
 list<Process> mlfq(pqueue_arrival workload){
   // Create the queues
-  queue0 q0;
-  queue1 q1;
-  queue2 q2;
-  queue3 q3;
+  queueP q0;
+  queueP q1;
+  queueP q2;
+  queueP q3;
 
-  void processHandler(int currentTime, queue0* q0, queue1* q1, queue2* q2, queue3* q3, pqueue_arrival* workload);
+  void processHandler(int currentTime, queueP* q0, queueP* q1, queueP* q2, queueP* q3, pqueue_arrival* workload);
+  void processRunner(queueP* initialQ, queueP* finalQ, int* time, list<Process>* processes);
 
   // Initialize the processes list
   list<Process> processes;
