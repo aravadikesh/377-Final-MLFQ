@@ -28,9 +28,8 @@ The `mlfqBasic` function implements the basic MLFQ algorithm without priority bo
 
 #### Signature
 
-```
+```cpp
 list<Process> mlfqBasic(queue_arrival workload);
-
 ```
 
 #### Algorithm
@@ -60,9 +59,8 @@ The mlfq function is an enhanced version of the MLFQ algorithm. It takes a prior
 
 #### Signature
 
-```
+```cpp
 list<Process> mlfq(queue_arrival workload);
-
 ```
 
 #### Algorithm
