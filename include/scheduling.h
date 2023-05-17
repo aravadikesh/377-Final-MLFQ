@@ -14,7 +14,6 @@ struct Process {
   
   // following properties are only relevent for mlfq
   int remaining;    // remaining duration for current time slice
-  int last_queue;   // last queue the process was in, initially 0
   bool interactive; // known in txt file, true if process is interactive, false if CPU intensive
   bool boosted; // initially false, set to true if a process becomes boosted
   int boostTime; // tracks the time a process has been boosted for
@@ -55,6 +54,7 @@ list<Process> fifo(pqueue_arrival workload);
 list<Process> sjf(pqueue_arrival workload);
 list<Process> stcf(pqueue_arrival workload);
 list<Process> rr(pqueue_arrival workload);
+list<Process> mlfqBasic(pqueue_arrival workload);
 list<Process> mlfq(pqueue_arrival workload);
 
 float avg_turnaround(list<Process> processes);
