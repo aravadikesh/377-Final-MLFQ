@@ -36,9 +36,14 @@ The syntax to do so is specified in the `main_scheduling` file.
          $ ./scheduling.app "required scheduling algorithm" "workloads/required workload file"
          `````
    - Example : to run the basic MLFQ function on workload3 :
-      - `./scheduling_app mlfqBasic workloads/workload3.txt`
+      - ```cpp
+         $ ./scheduling_app mlfqBasic workloads/workload3.txt
+         ```
+      
    - Example : to run the enhanced MLFQ function on workload1 :
-      - `./scheduling_app mlfq workloads/workload1.txt`
+      - ```cpp
+         $ ./scheduling_app mlfq workloads/workload1.txt
+         ```
 
 ## Process Structure
 
