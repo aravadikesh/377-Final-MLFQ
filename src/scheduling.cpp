@@ -316,7 +316,7 @@ void processHandler(int currentTime, queueP* q0, queueP* q1, queueP* q2, queueP*
   }
 }
 
-void processRunner(queueP* initialQ, queueP* finalQ, int* time, list<Process>* processes, int runSlice) {
+void processRunner(queueP* initialQ, queueP* finalQ, int* time, list<Process>* processes, int runSlice) {`
   Process p = initialQ->front();
   initialQ->pop();
 
@@ -345,6 +345,61 @@ void processRunner(queueP* initialQ, queueP* finalQ, int* time, list<Process>* p
   }
 }
 
+list<Process> mlfq2(pqueue_arrival workload){
+  // Create the queues
+  queueP q0;
+  queueP q1;
+  queueP q2;
+  queueP q3;
+
+  void processHandler(int currentTime, queueP* q0, queueP* q1, queueP* q2, queueP* q3, pqueue_arrival* workload);
+  void processRunner(queueP* initialQ, queueP* finalQ, int* time, list<Process>* processes, int runSlice);
+
+  // Initialize the processes list
+  list<Process> processes;
+  // Start the scheduling algorithm
+  int time = 0;
+  int boostTimer = 0;
+  int boostLimit = 50; // Arbitrary time limit to boost low priority processes
+
+  processHandler(time, &q0, &q1, &q2, &q3, &workload);
+
+  while (true) {
+
+    if(q0.empty() && q1.empty() && q2.empty() && q3.empty() && workload.empty()) {
+      break;
+    }
+
+    processHandler(time, &q0, &q1, &q2, &q3, &workload);
+
+    while(!q0.empty()) {
+      processRunner(&q0, &q1, &time, &processes, 1);
+    }
+
+    while(!q1.empty()) {
+      processRunner(&q1, &q2, &time, &processes, slice*2);
+    }
+
+    while(!q2.empty()) {
+      processRunner(&q2, &q3, &time, &processes, slice*4);
+    }
+
+    while(!q3.empty()) {
+      processRunner(&q3, &q3, &time, &processes, slice*5);
+    }
+
+    if(boostTimer >= boostLimit) {
+      processRunner(&q3, &q0, &time, &processes, 0);
+      boostTimer = 0;
+    }
+
+    if(q0.empty() && q1.empty() && q2.empty() && q3.empty() && !workload.empty()){
+      time = workload.top().arrival;
+    }
+
+  }
+  return processes;
+}
 
 list<Process> mlfq(pqueue_arrival workload){
   // Create the queues
@@ -493,7 +548,7 @@ list<Process> mlfq(pqueue_arrival workload){
 
       // Aging mechanism: Promote processes in lower-priority queues if they have been waiting for a long time
       if (!q1.empty()) {
-        queue1 tempQ1; // Temporary queue to hold promoted processes
+        queueP tempQ1; // Temporary queue to hold promoted processes
 
         // Iterate over the processes in q1
         while (!q1.empty()) {

@@ -18,6 +18,8 @@ The `Process` structure represents a process and contains the following properti
 - `waitingTime`: The time spent by the process in a queue.
 - `priority`: The importance of the process (known from the text file).
 
+
+
 ## Function Signatures
 
 The MLFQ function has the following function signatures:
