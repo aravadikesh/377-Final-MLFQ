@@ -13,6 +13,7 @@ This project contains the following important files/folders:
 - `include`: This is where the C/C++ header files are kept. 
 - `obj`: This folder is used for object files that are generated from the C compilation process.
 - `src`: This is the source folder where all the source code lies. 
+  -  The global variable `slice` in `scheduling.cpp` , determines the base value of the time slices for the mlfq algorithms. This can be modified to view the effect varying time slices can have.
 - `Makefile`: This is a "build" file. This file is used to compile the code.
 - `workloads`: This folder contains several text files that serve as the base upon which the scheduling algorithms are run.
 
@@ -44,7 +45,7 @@ The syntax to do so is specified in the `main_scheduling` file.
       - ```cpp
          $ ./scheduling_app mlfq workloads/workload1.txt
          ```
-
+  
 ## Process Structure
 
 The `Process` structure represents a process and contains the following properties:
