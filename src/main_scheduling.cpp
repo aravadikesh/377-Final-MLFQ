@@ -15,10 +15,10 @@ int main(int argc, char* argv[]) {
 
   pqueue_arrival workload = read_workload(workload_file);
 
-  // START
+  
   // show_workload(workload);
   // return 0;
-  // END
+  
 
   if (algorithm == "fifo") {
     show_metrics(fifo(workload));

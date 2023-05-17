@@ -11,7 +11,9 @@
 
 using namespace std;
 
-pqueue_arrival read_workload(const string& filename) {
+#define slice 3 // To be defined by the user
+
+pqueue_arrival read_workload(string filename) {
   pqueue_arrival workload;
   ifstream infile(filename);
 
@@ -19,9 +21,8 @@ pqueue_arrival read_workload(const string& filename) {
 
   while (getline(infile, line)) {
     istringstream iss(line);
-    int arrival, duration, priority;
-    bool interactive;
-    if (!(iss >> arrival >> duration >> interactive >> priority)) {
+    int arrival, duration, priority, interactive;
+    if (!(iss >> arrival >> duration >> interactive >> priority)) { 
       break;
     } 
 
@@ -219,9 +220,7 @@ list<Process> rr(pqueue_arrival workload) {
 			else{
 				break;
 			}
-
 		}
-
 
 		if(procsInExec.empty()){
 			current_time = workload.top().arrival;
@@ -284,11 +283,38 @@ void show_metrics(list<Process> processes) {
   cout << "Average Response Time:   " << avg_r << endl;
 }
 
+
+
 // Define four queues for each of the four priority levels
 typedef queue<Process> queue0;
 typedef queue<Process> queue1;
 typedef queue<Process> queue2;
 typedef queue<Process> queue3;
+
+void processHandler(int currentTime, queue0* q0, queue1* q1, queue2* q2, queue3* q3, pqueue_arrival* workload) {
+  while (!workload->empty()) {
+    Process p = workload->top();
+    if(p.arrival > currentTime) {
+        break;
+    } else {
+      workload->pop();
+      // Determine the priority of the process and place it in the corresponding queue
+      if (p.priority == 0) {
+        p.last_queue = 0;
+        q0->push(p);
+      } else if (p.priority == 1) {
+        p.last_queue = 1;
+        q1->push(p);
+      } else if (p.priority == 2) {
+        p.last_queue = 2;
+        q2->push(p);
+      } else if (p.priority == 3) {
+        p.last_queue = 3;
+        q3->push(p);
+      }
+    }
+  }
+}
 
 list<Process> mlfq(pqueue_arrival workload){
   // Create the queues
@@ -297,37 +323,25 @@ list<Process> mlfq(pqueue_arrival workload){
   queue2 q2;
   queue3 q3;
 
+  void processHandler(int currentTime, queue0* q0, queue1* q1, queue2* q2, queue3* q3, pqueue_arrival* workload);
+
   // Initialize the processes list
   list<Process> processes;
-
-  // Move the processes from the priority queue to their respective queues
-  while (!workload.empty()) {
-    Process p = workload.top();
-    p.remaining = p.duration;
-    workload.pop();
-
-    // Determine the priority of the process and place it in the corresponding queue
-    if (p.priority == 0) {
-      p.last_queue = 0;
-      q0.push(p);
-    } else if (p.priority == 1) {
-      p.last_queue = 1;
-      q1.push(p);
-    } else if (p.priority == 2) {
-      p.last_queue = 2;
-      q2.push(p);
-    } else if (p.priority == 3) {
-      p.last_queue = 3;
-      q3.push(p);
-    }
-  }
-
   // Start the scheduling algorithm
   int time = 0;
   int agingTimer = 0; // Timer to trigger aging mechanism
   const int agingThreshold = 10; // Define a threshold for aging (arbitrary value)
 
-  while (!q0.empty() || !q1.empty() || !q2.empty() || !q3.empty()) {
+  processHandler(time, &q0, &q1, &q2, &q3, &workload);
+
+  while (true) {
+
+    if(q0.empty() && q1.empty() && q2.empty() && q3.empty() && workload.empty()) {
+      break;
+    }
+
+    processHandler(time, &q0, &q1, &q2, &q3, &workload);
+
     // Check for interactive processes in the first queue
     // Allows for quick completion of short burst interactive processes
     // Can also allow for boosted processes to receive CPU time
@@ -336,7 +350,12 @@ list<Process> mlfq(pqueue_arrival workload){
       q0.pop();
 
       // Execute the process for 1 time slice
+      if(p.first_run == -1){
+			  p.first_run = time;
+		  }
+
       p.remaining--;
+      time++;
       p.waitingTime++; // Increment waiting time for the process
 
       if (p.boosted) {
@@ -346,7 +365,7 @@ list<Process> mlfq(pqueue_arrival workload){
       if (p.remaining == 0) {
         p.completion = time + 1;
         processes.push_back(p);
-      } else if (p.boosted && p.boostTime >= 10) { // If a boosted process exceeds its allotment, relegate it to a lower priority
+      } else if (p.boosted && p.boostTime >= slice*2) { // If a boosted process exceeds its allotment, relegate it to a lower priority
         p.boosted = false;
         p.interactive = false;
         q1.push(p);
@@ -359,31 +378,41 @@ list<Process> mlfq(pqueue_arrival workload){
     if (!q0.empty()) {
       Process p = q0.front();
       q0.pop();
+      
+      if(p.first_run == -1){
+			  p.first_run = time;
+		  }
 
-    // Execute the process for the maximum time slice
-    p.remaining -= 5;
-    p.waitingTime++; // Increment waiting time for the process
+      // Execute the process for the maximum time slice
+      p.remaining -= slice;
+      time += slice;
+      p.waitingTime++; // Increment waiting time for the process
 
-    if (p.remaining <= 0) {
-      p.completion = time + 5 + p.remaining;
-      processes.push_back(p);
-    } else {
-      p.last_queue = 1;
-      q1.push(p);
+      if (p.remaining <= 0) {
+        p.completion = time + slice + p.remaining;
+        processes.push_back(p);
+      } else {
+        p.last_queue = 1;
+        q1.push(p);
+      }
     }
-  }
 
     // Check for processes in the second queue
     if (!q1.empty()) {
       Process p = q1.front();
       q1.pop();
 
+      if(p.first_run == -1){
+			  p.first_run = time;
+		  }
+
       // Execute the process for the maximum time slice
-      p.remaining -= 10;
+      p.remaining -= slice*2;
+      time += slice*2;
       p.waitingTime++; // Increment waiting time for the process
 
       if (p.remaining <= 0) {
-        p.completion = time + 10 + p.remaining;
+        p.completion = time + slice*2 + p.remaining;
         processes.push_back(p);
       } 
       else {
@@ -401,12 +430,17 @@ list<Process> mlfq(pqueue_arrival workload){
       Process p = q2.front();
       q2.pop();
 
+      if(p.first_run == -1){
+			  p.first_run = time;
+		  }
+
       // Execute the process for the maximum time slice
-      p.remaining -= 20;
+      p.remaining -= slice*4;
+      time += slice*4;
       p.waitingTime++; // Increment waiting time for the process
 
       if (p.remaining <= 0) {
-        p.completion = time + 20 + p.remaining;
+        p.completion = time + slice*4 + p.remaining;
         processes.push_back(p);
       } else {
         if (p.last_queue == 2) {
@@ -419,7 +453,7 @@ list<Process> mlfq(pqueue_arrival workload){
     }
 
     // Increment the time
-    time++;
+    //time++;
     agingTimer++;
 
     // Check if it's time to perform aging
@@ -455,10 +489,15 @@ list<Process> mlfq(pqueue_arrival workload){
       Process p = q3.front();
       q3.pop();
 
+      if(p.first_run == -1){
+        p.first_run = time;
+      }
+
       // Execute the process for the maximum time slice
-      p.remaining -= 30;
+      p.remaining -= slice*5;
+      time += slice*5;
       if (p.remaining <= 0) {
-        p.completion = time + 30 + p.remaining;
+        p.completion = time + slice*5 + p.remaining;
         processes.push_back(p);
       } else {
         // Determine boost factor based on number of processes in fourth queue
@@ -491,7 +530,10 @@ list<Process> mlfq(pqueue_arrival workload){
     }
 
     // Increment the time
-    time++;
+    if(q0.empty() && q1.empty() && q2.empty() && q3.empty() && !workload.empty()){
+      agingTimer += workload.top().arrival - time;
+      time = workload.top().arrival;
+    }
   }
 
   return processes;
