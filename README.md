@@ -8,7 +8,7 @@ There are variations of the MLFQ algorithm with different features such as prior
 
 ## Presentation Link
 
-[(https://drive.google.com/file/d/17aTZUCj4OM6Yqa4xprbaNJDCz_KIHBLJ/view?usp=sharing)]
+[Google Drive Link](https://drive.google.com/file/d/17aTZUCj4OM6Yqa4xprbaNJDCz_KIHBLJ/view?usp=sharing)
 
 ## Code Structure
 
